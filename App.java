@@ -18,10 +18,16 @@ public class App {
         }
     }
 
+    public static void openFile() {
+        try {
+            File employeeFile = new
+        
+        }
+    }
     public static String employeeList() {
         String fileData = "";
         try {
-            File employeeFile = new File("./src/employee.txt"); // open file
+            File employeeFile = new File("./employee.txt"); // open file
             Scanner fileReader = new Scanner(employeeFile); // scanner for reading content of files
             while (fileReader.hasNextLine()) {
                 fileData += fileReader.nextLine() + "\n";
@@ -36,6 +42,10 @@ public class App {
     } 
 
     public static void updateFile() {
+
+    }
+
+    public static void addToFile() {
 
     }
 
