@@ -1,8 +1,5 @@
 import java.util.*;
 
-import javax.annotation.processing.FilerException;
-
-import jdk.javadoc.internal.doclets.toolkit.resources.doclets_ja;
 
 import java.io.*;
 import java.text.SimpleDateFormat;  
@@ -150,18 +147,25 @@ public class App {
                 System.out.println("Employee ID already exist");
                 continue;
             }
-            System.out.print("Enter employee's name: ");
-            employee.setName(scan.nextLine());
-            System.out.print("Enter employee's position: ");
-            employee.setPosition(scan.nextLine());
+
+            while (employee.getName().equals("")) {
+                System.out.print("Enter employee's name: ");
+                employee.setName(scan.nextLine());
+            }
+
+            while (employee.getPosition().equals("")) {
+                System.out.print("Enter employee's position: ");
+                employee.setPosition(scan.nextLine());
+            }
+            
             System.out.println("+-----------------------------------------------------------------------------------------------+");
             System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", "ID", "NAME", "STATUS", "DATE STARTED", "POSITION");
             System.out.println("-------------------------------------------------------------------------------------------------");
             System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", employee.getID(), employee.getName(), employee.getStatus(), employee.getDate(), employee.getPosition());
             System.out.println("+-----------------------------------------------------------------------------------------------+");
 
-            String ans = "";
-            ans = tryAgain("Are the details correct? [Y/N]? "); // to check if the details of the new employee are correct
+            // String ans = "";
+            String ans = tryAgain("Are the details correct? [Y/N]? "); // to check if the details of the new employee are correct
         
             if (ans.equals("Y")) {
                 break;
@@ -231,7 +235,6 @@ public class App {
                 arrayID.add(arrayEmployees.get(i).getID());
             }
         }
-        ClassEmployee employee = new ClassEmployee();
         while (true) {
             System.out.print("Enter employee's ID (Type -1 to go back to main menu): ");
             try {
@@ -292,6 +295,108 @@ public class App {
         fw.close();
     }
 
+    public static void updatePosition(FileReader employeeFile) throws IOException {
+        Scanner scan = new Scanner(System.in);
+        ArrayList<ClassEmployee> arrayEmployees = getClassArray(employeeFile);
+        ArrayList<Integer> arrayID = new ArrayList<Integer>(); // this will be used to check if current employee ID is already present
+        String newPosition = "";
+        int index = 0;
+        int id;
+        for (int i = 0; i < arrayEmployees.size(); i++) {
+            if (arrayEmployees.get(i).getStatus().equals("Active")) {
+                arrayID.add(arrayEmployees.get(i).getID());
+            }
+        }
+        while (true) {
+            System.out.print("Enter employee's ID (Type -1 to go back to main menu): ");
+            try {
+                id = Integer.parseInt(scan.nextLine());
+                if (id == -1) {
+                    return;
+                } 
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Input");
+                continue;
+            }
+
+            if (!arrayID.contains(id)) {
+                System.out.println("Employee ID does not exist");
+                continue;
+            }  else {
+                for (int i = 0; i < arrayEmployees.size(); i++) {
+                    if (arrayEmployees.get(i).getID() == id) {
+                        index = i;
+                    }
+                }
+            }
+
+            System.out.print("Enter employee's new position: ");
+            newPosition = scan.nextLine();
+            if (newPosition.isEmpty()) {
+                continue;
+            } else {
+                System.out.print("Employee ID: ");
+                System.out.println(id);
+                System.out.println("Employee's Old Position: " + arrayEmployees.get(index).getPosition());
+                System.out.println("Employee's New Position: " + newPosition);
+                String ans = tryAgain("Are the details correct? [Y/N]? "); 
+                if (ans.equals("N")) {
+                    continue;
+                }
+            }
+            break;
+        }
+
+
+
+        // This is to remove data from file before overwriting
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter("./src/employee.txt");
+            writer.print("");
+            writer.close();
+        } catch (FileNotFoundException e2) {
+            e2.printStackTrace();
+        }
+        
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter("./src/employee.txt", true);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } 
+
+
+        for (int i = 0; i < arrayEmployees.size(); i++) {
+            if (arrayEmployees.get(i).getID() == id) {
+                System.out.println(arrayEmployees.get(i).getName() + ", position is updates!");
+                arrayEmployees.get(i).setPosition(newPosition);
+            }
+
+            try {
+                fw.write(arrayEmployees.get(i).getID() + "\n"); 
+                fw.write(arrayEmployees.get(i).getName() + "\n"); 
+                fw.write(arrayEmployees.get(i).getStatus() + "\n"); 
+                fw.write(arrayEmployees.get(i).getDate() + "\n"); 
+                fw.write(arrayEmployees.get(i).getPosition() + "\n"); 
+            } catch(IOException e) {
+                System.err.println("IOException: " + e.getMessage());
+            }
+        }
+
+        fw.close();
+    }
+
+    public static void pressEnterToContinue(){ 
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Press Enter key to continue...");
+        try {
+            String temp = scan.nextLine();
+        }  catch(Exception e) {
+
+        } 
+    }
+
     public static void main(String[] args) throws Exception {
         Scanner scan = new Scanner(System.in);
         while (true) {
@@ -328,6 +433,7 @@ public class App {
             } else if (answer == 1) {
                 System.out.println("### Complete Employee List ###");
                 checkEmployeeList(employeeFile, "None");
+                
             } else if (answer == 2) {
                 System.out.println("### Active Employee List ###");
                 checkEmployeeList(employeeFile, "Active");
@@ -337,7 +443,7 @@ public class App {
             } else if (answer == 4) {
                 addEmployee(employeeFile);
             } else if (answer == 5) {
-                System.out.println("### Fire an Employee List ###");
+                System.out.println("### Fire an Employee ###");
                 checkEmployeeList(employeeFile, "Active");
                 try {
                     employeeFile = new FileReader("./src/employee.txt"); // open file
@@ -347,9 +453,18 @@ public class App {
                 }
                 fireEmployee(employeeFile);
             } else if (answer == 6) {
+                System.out.println("### Update Employee Position ###");
+                checkEmployeeList(employeeFile, "Active");
+                try {
+                    employeeFile = new FileReader("./src/employee.txt"); // open file
+                } catch (FileNotFoundException e) {
+                    System.out.println("File does not exist.");
+                    System.exit(0);
+                }
+                updatePosition(employeeFile);
             }
+            pressEnterToContinue();
         }
-        
         
 
         scan.close();
