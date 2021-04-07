@@ -1,24 +1,65 @@
 import java.util.*;
 import java.io.*;
+import java.text.SimpleDateFormat;  
 
 // Employee Management System
 // operators , control structures and arrays , object oriented programming , encapsulation and inheritance , polymorphism and abstraction , exception , collections, input and output stream , swing api , threads
 
 public class App {
 
-    public static class Employee {
+    public static class ClassEmployee {
         private int employeeID;
         private String name;
         private String employmentStatus;
         private String startingDate;
         private String position;
 
-        public Employee(int id, String name, String status, String date, String position) {
+        public ClassEmployee() {
+            this.employeeID = 0;
+            this.name = "";
+            this.employmentStatus = "";
+            this.startingDate = "";
+            this.position = "";
+        }
+
+        public void setID(int id) {
             this.employeeID = id;
+        }
+
+        public void setName(String name) {
             this.name = name;
+        }
+
+        public void setStatus(String status) {
             this.employmentStatus = status;
+        }
+
+        public void setDate(String date) {
             this.startingDate = date;
+        }
+
+        public void setPosition(String position) {
             this.position = position;
+        }
+        
+        public int getID() {
+            return this.employeeID;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getStatus() {
+            return this.employmentStatus;
+        }
+
+        public String getDate() {
+            return this.startingDate;
+        }
+
+        public String getPosition() {
+            return this.position;
         }
     }
 
@@ -27,9 +68,9 @@ public class App {
         int temp = 1;
         id = name = status = date = position = "";
         Scanner sc = new Scanner(employeeFile);
-        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.println("+-----------------------------------------------------------------------------------------------+");
         System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", "ID", "NAME", "STATUS", "DATE STARTED", "POSITION");
-        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.println("+-----------------------------------------------------------------------------------------------+");
         while (sc.hasNextLine()) {
             // to store data from file depending on the file
             if (temp == 1) {
@@ -51,7 +92,7 @@ public class App {
             }
             temp++;
         }
-        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.println("+-----------------------------------------------------------------------------------------------+");
         sc.close();
     }
 
@@ -59,8 +100,38 @@ public class App {
 
     }
 
-    public static void addToFile() {
+    public static void addEmployee() {
+        Scanner scan = new Scanner(System.in);
+        ClassEmployee employee = new ClassEmployee();
+        
+        System.out.println("Add an Employee");
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");  
+        Date date = new Date();  
+        String stringDate = formatter.format(date);
+        employee.setDate(stringDate);
+        employee.setStatus("Active");
+        while (true) {
+            System.out.print("Enter employee's ID : ");
+            try {
+                int id = Integer.parseInt(scan.nextLine());
+                employee.setID(id);
 
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Input");
+                continue;
+            }
+            System.out.print("Enter employee's name: ");
+            employee.setName(scan.nextLine());
+            System.out.print("Enter employee's position: ");
+            employee.setPosition(scan.nextLine());
+            break;
+        }
+        
+        System.out.println("+-----------------------------------------------------------------------------------------------+");
+        System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", "ID", "NAME", "STATUS", "DATE STARTED", "POSITION");
+        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", employee.getID(), employee.getName(), employee.getStatus(), employee.getDate(), employee.getPosition());
+        System.out.println("+-----------------------------------------------------------------------------------------------+");
     }
 
     public static void main(String[] args) throws Exception {
@@ -74,8 +145,11 @@ public class App {
             System.exit(0);
         }
 
+
+         
+
         while (true) {
-            System.out.println("------------------------------");
+            int answer;
             System.out.println("EMPLOYEE MANAGEMENT SYSTEM");
             System.out.println("[1] Check Complete Employee List");
             System.out.println("[2] Check Active Employee List");
@@ -85,13 +159,12 @@ public class App {
             System.out.println("[6] Update Employee Details");
             System.out.println("[0] Exit");
             
+            
             System.out.print("-> Input: ");
-            String user = scan.next();
-            int answer;
+            String user = scan.nextLine();
             try {
                 answer = Integer.parseInt(user);
             } catch (NumberFormatException e) {
-                
                 System.out.println("Invalid Input!");
                 continue;
             }
@@ -110,6 +183,7 @@ public class App {
                 checkEmployeeList(employeeFile, "Inactive");
             } else if (answer == 4) {
 
+                addEmployee();
             } else if (answer == 5) {
 
             } else if (answer == 6) {
@@ -120,10 +194,9 @@ public class App {
             
             
         }
-        scan.close();
         
         
-        // scan.close();
 
+        scan.close();
     }
 }
