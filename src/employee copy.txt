@@ -5,7 +5,7 @@ Active
 CEO
 2
 employee2
-Inactive
+Active
 4/2/2021
 Senior Programmer
 3
@@ -47,19 +47,9 @@ COO
 employee10
 Active
 04/07/2021
-Senior Programmer
+Programmer
 11
 employee11
-Inactive
+Active
 04/07/2021
 Manager
-12
-employee12
-Active
-04/08/2021
-Encoder
-13
-employee13
-Active
-04/08/2021
-Waiter
