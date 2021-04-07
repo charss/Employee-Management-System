@@ -1,0 +1,50 @@
+1
+employee1
+Active
+4/1/2021
+CEO
+2
+employee2
+Active
+4/2/2021
+Senior Programmer
+3
+employee3
+Active
+4/3/2021
+Secretary
+4
+employee4
+Inactive
+4/4/2021
+Marketing Head
+5
+employee5
+Active
+4/5/2021
+Junior Programmer
+6
+employee6
+Active
+4/6/2021
+Junior Programmer
+7
+employee7
+Active
+04/07/2021
+Cook
+8
+employee8
+Active
+04/07/2021
+Janitor
+9
+employee9
+Active
+04/07/2021
+COO
+10
+employee10
+Active
+04/07/2021
+Programmer
