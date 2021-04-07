@@ -330,19 +330,18 @@ public class App {
                 }
             }
 
-            System.out.print("Enter employee's new position: ");
-            newPosition = scan.nextLine();
-            if (newPosition.isEmpty()) {
+            while (newPosition.isEmpty()) {
+                System.out.print("Enter employee's new position: ");
+                newPosition = scan.nextLine();
+            }
+            
+            System.out.print("Employee ID: ");
+            System.out.println(id);
+            System.out.println("Employee's Old Position: " + arrayEmployees.get(index).getPosition());
+            System.out.println("Employee's New Position: " + newPosition);
+            String ans = tryAgain("Are the details correct? [Y/N]? "); 
+            if (ans.equals("N")) {
                 continue;
-            } else {
-                System.out.print("Employee ID: ");
-                System.out.println(id);
-                System.out.println("Employee's Old Position: " + arrayEmployees.get(index).getPosition());
-                System.out.println("Employee's New Position: " + newPosition);
-                String ans = tryAgain("Are the details correct? [Y/N]? "); 
-                if (ans.equals("N")) {
-                    continue;
-                }
             }
             break;
         }
