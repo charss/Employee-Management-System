@@ -1,4 +1,9 @@
 import java.util.*;
+
+import javax.annotation.processing.FilerException;
+
+import jdk.javadoc.internal.doclets.toolkit.resources.doclets_ja;
+
 import java.io.*;
 import java.text.SimpleDateFormat;  
 
@@ -6,7 +11,6 @@ import java.text.SimpleDateFormat;
 // operators , control structures and arrays , object oriented programming , encapsulation and inheritance , polymorphism and abstraction , exception , collections, input and output stream , swing api , threads
 
 public class App {
-
     public static class ClassEmployee {
         private int employeeID;
         private String name;
@@ -63,6 +67,19 @@ public class App {
         }
     }
 
+    public static String tryAgain(String sentence) {
+        String ans = "";
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.print(sentence);
+            ans = sc.nextLine().toUpperCase();
+            if (ans.equals("Y") || ans.equals("N")) {
+                break;
+            }
+        }
+        return ans;
+    }
+
     public static void checkEmployeeList(FileReader employeeFile, String checkStatus) {
         String id, name, status, date, position;
         int temp = 1;
@@ -96,14 +113,19 @@ public class App {
         sc.close();
     }
 
-    public static void updateFile() {
+    
 
+
+    public static void updateFile() {
+        
     }
 
-    public static void addEmployee() {
+
+
+    public static void addEmployee(FileReader employeeFile) {
         Scanner scan = new Scanner(System.in);
         ClassEmployee employee = new ClassEmployee();
-        
+        ArrayList<Integer> arrayID = getEmployeeID(employeeFile); // this will be used to check if current employee ID is already present
         System.out.println("Add an Employee");
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");  
         Date date = new Date();  
@@ -115,41 +137,102 @@ public class App {
             try {
                 int id = Integer.parseInt(scan.nextLine());
                 employee.setID(id);
-
             } catch (NumberFormatException e) {
                 System.out.println("Invalid Input");
+                continue;
+            }
+
+            if (arrayID.contains(employee.getID())) {
+                System.out.println("Employee ID already exist");
                 continue;
             }
             System.out.print("Enter employee's name: ");
             employee.setName(scan.nextLine());
             System.out.print("Enter employee's position: ");
             employee.setPosition(scan.nextLine());
-            break;
+            System.out.println("+-----------------------------------------------------------------------------------------------+");
+            System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", "ID", "NAME", "STATUS", "DATE STARTED", "POSITION");
+            System.out.println("-------------------------------------------------------------------------------------------------");
+            System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", employee.getID(), employee.getName(), employee.getStatus(), employee.getDate(), employee.getPosition());
+            System.out.println("+-----------------------------------------------------------------------------------------------+");
+
+            String ans = "";
+            ans = tryAgain("Are the details correct? [Y/N]? "); // to check if the details of the new employee are correct
+        
+            if (ans.equals("Y")) {
+                break;
+            } else {
+                String temp = tryAgain("Do you still want to add a new member [Y/N]? ");
+                if (temp.equals("N")) {
+                    return;
+                }
+            }
+        }
+
+        // appending new employee to the file
+        try {
+            FileWriter fw = new FileWriter("./src/employee.txt", true); // append the new data
+            fw.write(employee.getID() + "\n"); 
+            fw.write(employee.getName() + "\n"); 
+            fw.write(employee.getStatus() + "\n"); 
+            fw.write(employee.getDate() + "\n"); 
+            fw.write(employee.getPosition() + "\n"); 
+            fw.close();
+        } catch(IOException e) {
+            System.err.println("IOException: " + e.getMessage());
         }
         
-        System.out.println("+-----------------------------------------------------------------------------------------------+");
-        System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", "ID", "NAME", "STATUS", "DATE STARTED", "POSITION");
-        System.out.println("-------------------------------------------------------------------------------------------------");
-        System.out.format("|%6s|%30s|%10s|%15s|%30s|\n", employee.getID(), employee.getName(), employee.getStatus(), employee.getDate(), employee.getPosition());
-        System.out.println("+-----------------------------------------------------------------------------------------------+");
+    }
+
+    public static ArrayList<Integer> getEmployeeID(FileReader employeeFile) {
+        Scanner sc = new Scanner(employeeFile);
+        ArrayList<Integer> arrayID = new ArrayList<Integer>(); // store employee IDs
+        int count = 1;
+        String x;
+        while (sc.hasNextLine()) {
+            if (count == 1) {
+                x = sc.nextLine();
+                arrayID.add(Integer.parseInt(x));
+            } else {
+                String blank = sc.nextLine(); // just to continue reading file, the program only need to store the employee ID
+            }
+            
+            if (count == 5) {
+                count = 0;
+            }
+            count++;
+        }
+
+        sc.close();
+        return arrayID;
+    }
+
+    public static void fireEmployee(FileReader employeeFile) {
+        Scanner sc = new Scanner(employeeFile);
+        ArrayList<Integer> arrayID = getEmployeeID(employeeFile);
+        // while (true) {
+        //     System.out.print("Enter employee's ID : ");
+        //     try {
+        //         int id = Integer.parseInt(scan.nextLine());
+        //         employee.setID(id);
+        //     } catch (NumberFormatException e) {
+        //         System.out.println("Invalid Input");
+        //         continue;
+        //     }
+        // }
     }
 
     public static void main(String[] args) throws Exception {
-
         Scanner scan = new Scanner(System.in);
-        FileReader employeeFile = null;
-        try {
-            employeeFile = new FileReader("./src/employee.txt"); // open file
-        } catch (FileNotFoundException e) {
-            System.out.println("File does not exist.");
-            System.exit(0);
-        }
-
-
-         
-
         while (true) {
             int answer;
+            FileReader employeeFile = null;
+            try {
+                employeeFile = new FileReader("./src/employee.txt"); // open file
+            } catch (FileNotFoundException e) {
+                System.out.println("File does not exist.");
+                System.exit(0);
+            }
             System.out.println("EMPLOYEE MANAGEMENT SYSTEM");
             System.out.println("[1] Check Complete Employee List");
             System.out.println("[2] Check Active Employee List");
@@ -182,17 +265,13 @@ public class App {
                 System.out.println("### Inactive Employee List ###");
                 checkEmployeeList(employeeFile, "Inactive");
             } else if (answer == 4) {
-
-                addEmployee();
+                addEmployee(employeeFile);
             } else if (answer == 5) {
-
+                System.out.println("### Fire an Employee List ###");
+                checkEmployeeList(employeeFile, "Active");
             } else if (answer == 6) {
 
             }
-
- 
-            
-            
         }
         
         
