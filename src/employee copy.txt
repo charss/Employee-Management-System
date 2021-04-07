@@ -5,7 +5,7 @@ Active
 CEO
 2
 employee2
-Inactive
+Active
 4/2/2021
 Senior Programmer
 3
@@ -50,6 +50,6 @@ Active
 Programmer
 11
 employee11
-Inactive
+Active
 04/07/2021
 Manager
